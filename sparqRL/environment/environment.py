@@ -3,6 +3,23 @@ from typing import Union
 import numpy as np
 
 
+def _check_ranges(ranges) -> bool:
+    """
+    _check_ranges
+
+    this checks that every element of a list has a length of 2
+
+    :param ranges: ranges to test
+    :return: bool
+    """
+    it = iter(ranges)
+    the_len = 2
+    if not all(len(l) == the_len for l in it):
+        return False
+    else:
+        return True
+
+
 @dataclass
 class discrete_environment:
     """
@@ -20,13 +37,21 @@ class discrete_environment:
     state_range: list[list] = None
     action_range: list[list] = None
 
-    if state_range is not None:
-        # state_range outranks state_space
-        # if a user defines the ranges of each state, we can define the spaces based on that
-        state_space = tuple([state_range[i][1] - state_range[i][0] for i in range(len(state_range))])
+    def __post_init__(self):
+        """
+        check inputs are correct format
+        """
+        if self.state_range is not None:
+            # state_range outranks state_space
+            # if a user defines the ranges of each state, we can define the spaces based on that
+            assert _check_ranges(self.state_range), "ranges must have a length of 2"
+            self.state_space = tuple(
+                [self.state_range[i][1] - self.state_range[i][0] for i in range(len(self.state_range))])
 
-    if action_range is not None:
-        action_space = tuple([action_range[i][1] - action_range[i][0] for i in range(len(action_range))])
+        if self.action_range is not None:
+            assert _check_ranges(self.action_range), "ranges must have a length of 2"
+            self.action_space = tuple(
+                [self.action_range[i][1] - self.action_range[i][0] for i in range(len(self.action_range))])
 
     def get_ranges(self):
         """
@@ -44,11 +69,11 @@ class discrete_environment:
         # user defines specific ranges for states/actions
         if self.state_range is not None:
             self.state_values = [np.arange(self.state_range[i][0], self.state_range[i][1]) for i in
-                                range(len(self.state_range))]
+                                 range(len(self.state_range))]
 
         if self.action_range is not None:
             self.action_values = [np.arange(self.action_range[i][0], self.action_range[i][1]) for i in
-                                 range(len(self.action_range))]
+                                  range(len(self.action_range))]
         # return (state_ranges, action_ranges)
         return (self.state_values, self.action_values)
 
@@ -98,4 +123,3 @@ class discrete_environment:
             self.state_space = value
 
         return None
-
