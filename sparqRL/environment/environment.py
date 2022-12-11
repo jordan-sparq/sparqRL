@@ -3,7 +3,7 @@ from typing import Union
 import numpy as np
 
 
-def _check_ranges(ranges) -> bool:
+def _check_ranges_len(ranges) -> bool:
     """
     _check_ranges
 
@@ -14,7 +14,11 @@ def _check_ranges(ranges) -> bool:
     """
     it = iter(ranges)
     the_len = 2
+    #  assert len = 2
     if not all(len(l) == the_len for l in it):
+        return False
+    # assert min <= max
+    if not all(l[1] - l[0] >= 0 for l in ranges):
         return False
     else:
         return True
@@ -25,80 +29,91 @@ class discrete_environment:
     """
     This class is used to store the information of the environment.
 
-    :param state_space: [tuple] number of possible values in each state
-    :param action_space: [tuple] number of possible values in each action
     :param state_range: state[min, max] min and max value of each state
     :param action_range: action[min, max] min and max value of each action
 
     """
 
-    state_space: tuple = None
-    action_space: tuple = None
     state_range: list[list] = None
     action_range: list[list] = None
 
     def __post_init__(self):
         """
-        check inputs are correct format
+        post init
         """
-        if self.state_range is not None:
-            # state_range outranks state_space
-            # if a user defines the ranges of each state, we can define the spaces based on that
-            assert _check_ranges(self.state_range), "ranges must have a length of 2"
-            self.state_space = tuple(
-                [self.state_range[i][1] - self.state_range[i][0] for i in range(len(self.state_range))])
 
-        if self.action_range is not None:
-            assert _check_ranges(self.action_range), "ranges must have a length of 2"
-            self.action_space = tuple(
-                [self.action_range[i][1] - self.action_range[i][0] for i in range(len(self.action_range))])
+        assert (self.state_range is not None) & (self.action_range is not None), \
+            "User must define both the state and action range, e.g state_range = [[1, 5], [5, 10], [2, 5]], " \
+            "where the first element is the minimum value a state/action can take, and the second element is the " \
+            "maximum (inclusive)."
 
-    def get_ranges(self):
+        assert _check_ranges_len(self.state_range) & _check_ranges_len(self.action_range), \
+            "Range of both the state and action spaces must have a length of 2: [min, max] (inclusive). " \
+            "The max must be >= min."
+
+        self.state_space = self._get_dimensions(self.state_range)
+        self.action_space = self._get_dimensions(self.action_range)
+
+        self.state_values = self._get_values(self.state_range)
+        self.action_values = self._get_values(self.action_range)
+
+    def _get_dimensions(self, state_or_action_range: list[list]):
         """
-        get possible values of all states and actions
+        _get_dimensions
 
-        :return: tuple(state ranges, action ranges)
+        get dimensions of state or action space
+
+        :param state_or_action_range: state or action ranges list[list]
+        :return: [tuple] tuple of number of possible values for each state or action
         """
-        # if no ranges are given, assume they can be 0 - max
-        if self.state_range is None:
-            self.state_values = [np.arange(0, self.state_space[i]) for i in range(len(self.state_space))]
+        _dimensions = []
+        for i in state_or_action_range:
+            if i[0] == i[1]:
+                _dimensions.append(1)
+            else:
+                _dimensions.append((i[1] - i[0]) + 1)  # + 1 as it includes the min and max
 
-        if self.action_range is None:
-            self.action_values = [np.arange(0, self.action_space[i]) for i in range(len(self.action_space))]
+        return tuple(_dimensions)
 
-        # user defines specific ranges for states/actions
-        if self.state_range is not None:
-            self.state_values = [np.arange(self.state_range[i][0], self.state_range[i][1]) for i in
-                                 range(len(self.state_range))]
+    def _get_values(self, state_or_action_range: list[list]):
+        """
+        get_values
 
-        if self.action_range is not None:
-            self.action_values = [np.arange(self.action_range[i][0], self.action_range[i][1]) for i in
-                                  range(len(self.action_range))]
-        # return (state_ranges, action_ranges)
-        return (self.state_values, self.action_values)
+        get possible values of each state or action
+
+        :param state_or_action_range: state or action ranges list[list]
+        :return: [list[list]] all possible values of each state or action
+        """
+
+        _possible_values = []
+
+        for i in state_or_action_range:
+            if i[0] == i[1]:
+                _possible_values.append([i[0]])
+            else:
+                _possible_values.append(list(np.arange(i[0], i[1] + 1)))
+
+        return _possible_values
 
     def __getitem__(self, space: str = "action") -> tuple:
         """
         __getitem__
 
-        get action, state, or state-action space
+        get action or state information
 
-        :param space: [str] space should be any of the following ["action", "state", "state-action"]
+        :param space: [str] space should be any of the following ["action", "state"]
         :return: tuple containing the space chosen by the user
         """
 
-        _spaces = ["action", "state", "state-action"]
+        _spaces = ["action", "state"]
 
         assert space in _spaces, f"Please choose any one of {_spaces}"
 
         if space == "action":
-            return self.action_space
+            return (self.action_space, self.action_range)
 
         elif space == "state":
-            return self.state_space
-
-        elif space == "state-action":
-            return self.state_space + self.action_space
+            return (self.state_space, self.state_range)
 
     def __setitem__(self, space, value: tuple) -> None:
         """
@@ -123,3 +138,20 @@ class discrete_environment:
             self.state_space = value
 
         return None
+
+
+def main():
+    """
+    example of how to use this class
+
+    :return: None
+    """
+
+    env2 = discrete_environment(state_range=[[0, 2], [5, 10]], action_range=[[2, 6]])
+    print(f"env2 = {env2.__getitem__('state')}")
+    print(env2.state_values)
+    return None
+
+
+if __name__ == "__main__":
+    main()
