@@ -138,20 +138,3 @@ class discrete_environment:
             self.state_space = value
 
         return None
-
-
-def main():
-    """
-    example of how to use this class
-
-    :return: None
-    """
-
-    env2 = discrete_environment(state_range=[[0, 2], [5, 10]], action_range=[[2, 6]])
-    print(f"env2 = {env2.__getitem__('state')}")
-    print(env2.state_values)
-    return None
-
-
-if __name__ == "__main__":
-    main()
