@@ -5,7 +5,7 @@ setup(
     version='0.1.0',
     author='Jordan Palmer',
     author_email='jordan.palmer@datasparq.ai',
-    packages=['sparqRL', 'sparqRL.test'],
+    packages=['sparqRL'],
     # scripts=['bin/script1','bin/script2'],
     # url='http://pypi.python.org/pypi/PackageName/',
     license='LICENSE.txt',
