@@ -21,10 +21,12 @@ class table:
     initial_value: float = 0
     _table: sparse.DOK = None
 
-    assert shape is not None, "user must define a shape for the table [tuple]"
+    def __post_init__(self):
 
-    if _table is None:
-        _table = sparse.DOK(shape, fill_value=initial_value)
+        assert self.shape is not None, "user must define a shape for the table [tuple]"
+
+        if self._table is None:
+            self._table = sparse.DOK(self.shape, fill_value=self.initial_value)
 
     def __getitem__(self, key: tuple) -> Union[float, int, sparse.DOK]:
         """
@@ -57,13 +59,3 @@ class table:
             self._table[0] = value
         else:
             self._table[key] = value
-
-def main():
-
-    return None
-
-if __name__ == "__main__":
-    """
-    just to show how to use this class
-    """
-    main()

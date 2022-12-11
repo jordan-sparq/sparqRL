@@ -1,4 +1,18 @@
 from setuptools import setup, find_packages
+import os
+from typing import List
+
+def get_requirements(requirements_file: str) -> List[str]:
+    """Read requirements from requirements.txt"""
+
+    file_path = os.path.join(os.path.dirname(__file__), requirements_file)
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+    lines = [line.strip() for line in lines]
+    lines = [line for line in lines if not line.startswith("#") and line]
+    lines = [line for line in lines if not line.startswith("-") and line]
+    return lines
+
 
 setup(
     name='sparqRL',
@@ -11,8 +25,7 @@ setup(
     license='LICENSE.txt',
     description='Reinforcement Learning Component',
     long_description=open('README.txt').read(),
-    install_requires=[
-       "pytest",
-        "sparse",
-    ],
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=get_requirements("requirements.txt"),
 )
