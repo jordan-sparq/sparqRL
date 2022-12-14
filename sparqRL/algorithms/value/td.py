@@ -12,6 +12,7 @@ class QLearning:
     def __init__(self, environment: discrete_environment, initial_value: float):
         Q = table(shape=environment.state_space + environment.action_space, initial_value=initial_value)
         self.Q = Q
+        
     def _update(self,
                 state: tuple,
                 action: tuple,
