@@ -59,3 +59,4 @@ class table:
             self._table[0] = value
         else:
             self._table[key] = value
+
