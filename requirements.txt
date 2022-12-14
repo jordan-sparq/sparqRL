@@ -1,1 +1,21 @@
+pattern-gcp-bigquery==2.0.dev2
+pattern-gcp-storage==2.0.dev2
+pattern-gcp-secret==2.0.dev2
+easylogging==2.0.dev2
+# the basic DS packages
+pandas
+matplotlib
+seaborn
+numpy
+db_dtypes
+# rl model related packages
+gym
 sparse==0.13.0
+# extra tooling
+fire
+gspread
+apiclient
+google-api-python-client
+oauth2client
+fsspec
+gcsfs
