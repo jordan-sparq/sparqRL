@@ -1,3 +1,4 @@
 google-cloud-aiplatform
+google-cloud-pipeline-components
 black
 pre-commit

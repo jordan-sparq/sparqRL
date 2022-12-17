@@ -24,7 +24,7 @@ setup(
     # url='http://pypi.python.org/pypi/PackageName/',
     license='LICENSE.txt',
     description='Reinforcement Learning Component',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     include_package_data=True,
     zip_safe=False,
     install_requires=get_requirements("requirements.txt"),
