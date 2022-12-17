@@ -9,6 +9,7 @@ gcloud auth login
 pip install --upgrade --extra-index-url https://europe-west2-python.pkg.dev/dsq-components/dsq-components/simple \
  'tsrex==0.3.dev3'
 
+pip install --upgrade --extra-index-url https://europe-west2-python.pkg.dev/dsq-components/dsq-components/simple  .
 ##### Install lolcal requirements:
 pip install -r requirements-local.txt
 
